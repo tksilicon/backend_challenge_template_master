@@ -10,7 +10,8 @@
     "build": "NODE_ENV=production babel src -d dist --copy-files",
     "start": "NODE_ENV=production node dist/index.js",
 	"test:watch": "jest --no-cache  --detectOpenHandles --runInBand --watch",
-    "lint": "eslint src/**/*.js src/**/*.mjs"
+	"lint": "eslint src/**/*.js src/**/*.mjs",
+	"postinstall": "webpack"
   },
   "keywords": [
     "ecommerce",
