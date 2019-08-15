@@ -4,8 +4,7 @@ node_js:
 services:
   - mysql
 before_install:
-  - mysql -u root -e "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('')"
-  - mysql -u root --password="" < database/dump.sql
+ - mysql -u root --password="" < test/travis.sql
 script:
   - "npm run test"
 deploy:
