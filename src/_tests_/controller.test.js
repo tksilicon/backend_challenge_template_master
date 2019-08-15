@@ -32,10 +32,12 @@ const departments = [
 
 
 afterEach(async () => {
-        await server.close();
+		await server.close();
+		});
 
 beforeEach(()=> { 
 		server = require('../index');
+		});
 		
 describe('Test the root path', () => {
   test('It should response the GET method', done => {
