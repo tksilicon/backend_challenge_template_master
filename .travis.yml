@@ -3,6 +3,8 @@ node_js:
   - 8.5.0
 services:
   - mysql
+before_script:
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
 before_install:
  - mysql -u root --password="" < database/dump.sql
 script:
