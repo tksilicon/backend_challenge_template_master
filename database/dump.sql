@@ -1,5 +1,9 @@
 -- Create tshirtshop tables
 
+# Create DB
+CREATE DATABASE IF NOT EXISTS `tshirtshop` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `tshirtshop`;
+
 -- Create department table
 CREATE TABLE `department` (
   `department_id` INT            NOT NULL  AUTO_INCREMENT,
