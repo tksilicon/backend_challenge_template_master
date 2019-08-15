@@ -1,14 +1,14 @@
 /**
  * Customer controller handles all requests that has to do with customer
  * Some methods needs to be implemented from scratch while others may contain one or two bugs
- * 
+ *
  * - create - allow customers to create a new account
  * - login - allow customers to login to their account
  * - getCustomerProfile - allow customers to view their profile info
  * - updateCustomerProfile - allow customers to update their profile info like name, email, password, day_phone, eve_phone and mob_phone
  * - updateCustomerAddress - allow customers to update their address info
  * - updateCreditCard - allow customers to update their credit card number
- * 
+ *
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
