@@ -40,7 +40,7 @@ describe('Test the root path', () => {
   });
 });
 
-describe('GET /departments', () => {
+/** describe('GET /departments', () => {
   test('It responds with an array of departments', async () => {
     const response = await request(server).get('/departments');
     expect(response.body).toEqual(departments);
@@ -51,4 +51,4 @@ describe('GET /departments', () => {
 
     expect(response.statusCode).toBe(200);
   });
-});
+});*/

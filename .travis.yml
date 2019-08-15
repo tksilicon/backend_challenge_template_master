@@ -1,11 +1,6 @@
 language: node_js
 node_js:
   - 8.5.0
-services:
-  - mysql
-before_install:
- - echo "USE mysql;\nUPDATE user SET authentication_string=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
- - mysql -u root --password="root" < database/dump.sql
 script:
   - "npm run test"
 deploy:
