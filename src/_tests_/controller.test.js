@@ -2,7 +2,7 @@
 import '@babel/polyfill';
 
 const request = require('supertest');
-const server = require('../index');
+//const server = require('../index');
 
 const department = {
   id: 1,
@@ -29,11 +29,17 @@ const departments = [
   },
 ];
 
+
+
+afterEach(async () => {
+        await server.close();
+
+beforeEach(()=> { 
+		server = require('../index');
+		
 describe('Test the root path', () => {
   test('It should response the GET method', done => {
-    request(server)
-      .get('/')
-      .then(response => {
+    request(server).get('/').then(response => {
         expect(response.statusCode).toBe(200);
         done();
       });
@@ -49,6 +55,7 @@ describe('GET /departments', () => {
     expect(response.body[0]).toHaveProperty('name');
     expect(response.body[0]).toHaveProperty('description');
 
-    expect(response.statusCode).toBe(200);
+	expect(response.statusCode).toBe(200);
+	
   });
 });
