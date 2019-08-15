@@ -1,6 +1,7 @@
 -- Create tshirtshop tables
 
 # Create DB
+CREATE DATABASE IF NOT EXISTS `tshirtshop_test` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `tshirtshop_test`;
 
 -- Create department table

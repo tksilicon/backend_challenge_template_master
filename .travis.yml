@@ -8,9 +8,8 @@ before_install:
 script:
   - "npm run test"
 before_script:
-  - mysql -u root -e 'CREATE DATABASE tshirtshop_test;'
   - mysql -u root -e "CREATE USER 'dev'@'localhost' IDENTIFIED BY 'dev';"
-  - mysql -u root -e "GRANT ALL ON tshirtshop_test.* TO 'makler'@'localhost';"
+  - mysql -u root -e "GRANT ALL ON tshirtshop_test.* TO 'dev'@'localhost';"
 deploy:
   provider: heroku
   api_key:
