@@ -1,11 +1,6 @@
 -- Create tshirtshop tables
 
-CREATE USER 'dev'@'localhost' IDENTIFIED BY 'dev';
-GRANT ALL PRIVILEGES ON *.* TO 'dev'@'localhost';
-
-
 # Create DB
-CREATE DATABASE IF NOT EXISTS `tshirtshop_test` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `tshirtshop_test`;
 
 -- Create department table
