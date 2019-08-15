@@ -39,6 +39,7 @@ describe('Test the root path', () => {
       });
   });
 });
+
 describe('GET /departments', () => {
   test('It responds with an array of departments', async () => {
     const response = await request(server).get('/departments');
