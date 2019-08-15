@@ -2,7 +2,7 @@
 import '@babel/polyfill';
 
 const request = require('supertest');
-//const server = require('../index');
+var server = require('../index');
 
 const department = {
   id: 1,
