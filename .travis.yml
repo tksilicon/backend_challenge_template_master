@@ -8,7 +8,7 @@ before_install:
 script:
   - "npm run test"
 before_script:
-  - cp .env.travis .env
+ 
   - mysql -u root -e "CREATE USER 'dev'@'localhost' IDENTIFIED BY 'dev';"
   - mysql -u root -e "GRANT ALL ON tshirtshop_test.* TO 'dev'@'localhost';"
 deploy:
