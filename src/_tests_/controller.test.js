@@ -1,5 +1,6 @@
 // we will use supertest to test HTTP requests/responses
 import '@babel/polyfill';
+process.env.NODE_ENV = "test";
 
 const request = require('supertest');
 var server = require('../index');

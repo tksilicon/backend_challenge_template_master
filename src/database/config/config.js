@@ -8,10 +8,7 @@ module.exports = {
     logging: false,
   },
   test: {
-    username: process.env.TEST_DB_USER,
-    password: process.env.TEST_DB_PASS,
-    database: process.env.TEST_DB_NAME,
-    host: process.env.TEST_DB_HOST,
+    use_env_variable: process.env.DATABASE_URL,
     dialect: 'mysql',
     logging: false,
   },
