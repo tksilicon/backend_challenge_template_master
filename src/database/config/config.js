@@ -1,5 +1,9 @@
 require('dotenv').config();
 
 
-"development": {  "use_env_variable": "DATABASE_URL"
-},
+module.exports = {
+
+	"development": {  
+		"use_env_variable": "DATABASE_URL"
+	},
+};
