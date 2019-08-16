@@ -3,14 +3,11 @@ node_js:
   - 8.5.0
 services:
   - mysql  
-before_install:
-  - mysql -u root --password="" < database/dump.sql
+
 script:
   - "npm run test"
-before_script:
- 
-  - mysql -u root -e "CREATE USER 'dev'@'localhost' IDENTIFIED BY 'dev';"
-  - mysql -u root -e "GRANT ALL ON tshirtshop_test.* TO 'dev'@'localhost';"
+  
+
 deploy:
   provider: heroku
   api_key:
