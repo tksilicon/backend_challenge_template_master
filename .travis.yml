@@ -11,7 +11,7 @@ script:
 deploy:
   provider: heroku
   api_key:
-    secure: 3d1959c4-9d87-448c-bd6f-79ff189b6079
+    secure: $HEROKU_API_KEY
   app: backend-turing-nodejs
   on:
     repo: tksilicon/backend_challenge_template_master
