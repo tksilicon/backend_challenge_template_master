@@ -14,6 +14,9 @@ import router from './routes';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const app = express();
+
+const passport = require('passport');
+
 const corsOptions = {
   credentials: true,
   origin: [],
@@ -48,6 +51,9 @@ app.use(
 
 app.use('/stripe/charge', express.static(`${__dirname}/public`));
 
+require('./config/authentication');
+
+app.use(passport.initialize()); // initializes the passport configuration.
 app.use(router);
 
 // catch 404 and forward to error handler

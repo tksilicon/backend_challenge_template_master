@@ -41,4 +41,4 @@ node_modules
 #Local environment
 .env
 dist/
-.vscode
+.vscodesendgrid.env

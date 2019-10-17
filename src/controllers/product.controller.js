@@ -1,3 +1,6 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable use-isnan */
+/* eslint-disable camelcase */
 /**
  * The Product controller contains all static methods that handles product request
  * Some methods work fine, some needs to be implemented from scratch while others may contain one or two bugs
@@ -17,16 +20,12 @@
  *  NB: Check the BACKEND CHALLENGE TEMPLATE DOCUMENTATION in the readme of this repository to see our recommended
  *  endpoints, request body/param, and response object for each of these method
  */
-import {
-  Product,
-  Department,
-  AttributeValue,
-  Attribute,
-  Category,
-  Sequelize,
-} from '../database/models';
+import { Product, Department, Category, Sequelize } from '../database/models';
+import { getPage, getLimit, getDescriptionLength } from '../util/turingutil.ts';
 
 const { Op } = Sequelize;
+
+const { validationResult } = require('express-validator/check');
 
 /**
  *
@@ -45,17 +44,49 @@ class ProductController {
    * @memberof ProductController
    */
   static async getAllProducts(req, res, next) {
-    const { query } = req;
-    const { page, limit, offset } = query;
-    const sqlQueryMap = {
-      limit,
-      offset,
-    };
     try {
+      const page = getPage(req);
+      const limit = getLimit(req);
+      const descriptionLength = getDescriptionLength(req);
+
+      const offsett = Number(page) * Number(limit);
+      const limitPage = offsett + Number(limit);
+
+      const sqlQueryMap = {
+        attributes: [
+          'product_id',
+          'name',
+          'price',
+
+          [Sequelize.literal(`SUBSTRING(description, 1, ${descriptionLength})`), 'description'],
+          'discounted_price',
+          'thumbnail',
+        ],
+        limit: limitPage,
+        offset: offsett,
+      };
+
       const products = await Product.findAndCountAll(sqlQueryMap);
-      return res.status(200).json({
-        status: true,
-        products,
+
+      if (products) {
+        return res.status(200).json({
+          paginationMeta: {
+            currentPage: page, // Current page number
+            currentPageSize: limit, // The page limit
+            totalPages: limitPage / limit, // The total number of pages for all products
+            totalRecords: products.count, // The total number of product in the database
+          },
+          rows: { products },
+        });
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `API_01`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `products`,
+          status: 400,
+        },
       });
     } catch (error) {
       return next(error);
@@ -73,10 +104,82 @@ class ProductController {
    * @memberof ProductController
    */
   static async searchProduct(req, res, next) {
-    const { query_string, all_words } = req.query;  // eslint-disable-line
-    // all_words should either be on or off
-    // implement code to search product
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `PRO_01`,
+            message: `Check that query params are not empty`,  // eslint-disable-line
+            field: `query_string/allwords`,
+            status: 400,
+          },
+        });
+      }
+
+      const page = getPage(req);
+      const limit = getLimit(req);
+      const descriptionLength = getDescriptionLength(req);
+      const { query_string } = req.query;
+
+      const offsett = Number(page) * Number(limit);
+      const limitPage = offsett + Number(limit);
+
+      const sqlQueryMap = {
+        attributes: [
+          'product_id',
+          'name',
+          'price',
+
+          [Sequelize.literal(`SUBSTRING(description, 1, ${descriptionLength})`), 'description'],
+          'discounted_price',
+          'thumbnail',
+        ],
+        where: {
+          [Op.or]: [
+            {
+              description: {
+                [Op.like]: `%${query_string}%`,
+              },
+            },
+            {
+              name: {
+                [Op.like]: `%${query_string}%`,
+              },
+            },
+          ],
+        },
+
+        limit: limitPage,
+        offset: offsett,
+      };
+
+      const products = await Product.findAndCountAll(sqlQueryMap);
+
+      if (products) {
+        return res.status(200).json({
+          paginationMeta: {
+            currentPage: page, // Current page number
+            currentPageSize: limit, // The page limit
+            totalPages: limitPage / limit, // The total number of pages for all products
+            totalRecords: products.count, // The total number of product in the database
+          },
+          rows: { products },
+        });
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `API_01`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `products`,
+          status: 400,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
@@ -91,21 +194,64 @@ class ProductController {
    */
   static async getProductsByCategory(req, res, next) {
     try {
-      const { category_id } = req.params; // eslint-disable-line
-      const products = await Product.findAndCountAll({
-        include: [
-          {
-            model: Department,
-            where: {
-              category_id,
-            },
-            attributes: [],
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `PRO_01`,
+            message: `Check that category_id isnumeric`,  // eslint-disable-line
+            field: `category_id`,
+            status: 400,
           },
+        });
+      }
+      const { category_id } = req.params; // eslint-disable-line
+
+      const page = getPage(req);
+      const limit = getLimit(req);
+      const descriptionLength = getDescriptionLength(req);
+
+      const offsett = Number(page) * Number(limit);
+      const limitPage = offsett + Number(limit);
+
+      const products = await Product.findAndCountAll({
+        include: [Category],
+        through: { where: { category_id: `${category_id}` } },
+        attributes: [
+          'product_id',
+          'name',
+          'price',
+
+          [Sequelize.literal(`SUBSTRING(description, 1, ${descriptionLength})`), 'description'],
+          'discounted_price',
+          'thumbnail',
         ],
-        limit,
-        offset,
+
+        limit: limitPage,
+        offset: offsett,
       });
-      return next(products);
+
+      if (products) {
+        return res.status(200).json({
+          params: {
+            currentPage: page, // Current page number
+            currentPageSize: limit, // The page limit
+            totalPages: limitPage / limit, // The total number of pages for all products
+            totalRecords: products.count, // The total number of product in the database
+          },
+          rows: { products },
+        });
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `API_02`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `products`,
+          status: 400,
+        },
+      });
     } catch (error) {
       return next(error);
     }
@@ -123,6 +269,70 @@ class ProductController {
    */
   static async getProductsByDepartment(req, res, next) {
     // implement the method to get products by department
+
+    try {
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `PRO_03`,
+            message: `Check that department_id isnumeric`,  // eslint-disable-line
+            field: `department_id`,
+            status: 400,
+          },
+        });
+      }
+
+      const { department_id } = req.params; // eslint-disable-line
+
+      const page = getPage(req);
+      const limit = getLimit(req);
+      const descriptionLength = getDescriptionLength(req);
+
+      const offsett = Number(page) * Number(limit);
+      const limitPage = offsett + Number(limit);
+
+      const products = await Product.findAndCountAll({
+        include: [Category],
+        through: { where: { department_id: `${department_id}` } },
+        attributes: [
+          'product_id',
+          'name',
+          'price',
+
+          [Sequelize.literal(`SUBSTRING(description, 1, ${descriptionLength})`), 'description'],
+          'discounted_price',
+          'thumbnail',
+        ],
+
+        limit: limitPage,
+        offset: offsett,
+      });
+
+      if (products) {
+        return res.status(200).json({
+          params: {
+            currentPage: page, // Current page number
+            currentPageSize: limit, // The page limit
+            totalPages: limitPage / limit, // The total number of pages for all products
+            totalRecords: products.count, // The total number of product in the database
+          },
+          rows: { products },
+        });
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `API_03`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `products`,
+          status: 400,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
@@ -136,27 +346,45 @@ class ProductController {
    * @memberof ProductController
    */
   static async getProduct(req, res, next) {
-    const { product_id } = req.params; // eslint-disable-line
     try {
-      const product = await Product.findByPk(product_id, {
-        include: [
-          {
-            model: AttributeValue,
-            as: 'attributes',
-            attributes: ['value'],
-            through: {
-              attributes: [],
-            },
-            include: [
-              {
-                model: Attribute,
-                as: 'attribute_type',
-              },
-            ],
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `PRO_04`,
+            message: `Check that product_id isnumeric`,  // eslint-disable-line
+            field: `product_id`,
+            status: 400,
           },
+        });
+      }
+      const { product_id } = req.params; // eslint-disable-line
+
+      const product = await Product.findByPk(product_id, {
+        attributes: [
+          'product_id',
+          'name',
+          'price',
+
+          [Sequelize.literal(`SUBSTRING(description, 1, 200)`), 'description'],
+          'discounted_price',
+          'thumbnail',
         ],
       });
-      return res.status(500).json({ message: 'This works!!1' });
+
+      if (product) {
+        return res.status(200).json(product);
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `API_04`,
+          message: `Product with id ${product_id} does not exist`,  // eslint-disable-line
+          field: `product_id`,
+          status: 400,
+        },
+      });
     } catch (error) {
       return next(error);
     }
@@ -175,7 +403,19 @@ class ProductController {
   static async getAllDepartments(req, res, next) {
     try {
       const departments = await Department.findAll();
-      return res.status(200).json(departments);
+
+      if (departments) {
+        return res.status(200).json(departments);
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `DEP_03`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `departments`,
+          status: 400,
+        },
+      });
     } catch (error) {
       return next(error);
     }
@@ -188,17 +428,38 @@ class ProductController {
    * @param {*} next
    *
    */
+
   static async getDepartment(req, res, next) {
-	const { department_id } = req.params; // eslint-disable-line
     try {
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `DEP_01`,
+            message: `The ID is not a number`,  // eslint-disable-line
+            field: `department_id`,
+            status: 400,
+          },
+        });
+      }
+    } catch (error) {
+      return next(error);
+    }
+
+    try {
+      const { department_id } = req.params; // eslint-disable-line
       const department = await Department.findByPk(department_id);
       if (department) {
         return res.status(200).json(department);
       }
+
       return res.status(404).json({
         error: {
-          status: 404,
+          code: `DEP_02`,
           message: `Department with id ${department_id} does not exist`,  // eslint-disable-line
+          field: `department_id`,
+          status: 400,
         },
       });
     } catch (error) {
@@ -214,7 +475,25 @@ class ProductController {
    */
   static async getAllCategories(req, res, next) {
     // Implement code to get all categories here
-    return res.status(200).json({ message: 'this works' });
+
+    try {
+      const categories = await Category.findAll();
+
+      if (categories) {
+        return res.status(200).json(categories);
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `CAT_03`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `categories`,
+          status: 400,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
@@ -224,9 +503,38 @@ class ProductController {
    * @param {*} next
    */
   static async getSingleCategory(req, res, next) {
-    const { category_id } = req.params;  // eslint-disable-line
-    // implement code to get a single category here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `CAT_01`,
+            message: `The category_id is not a number`,  // eslint-disable-line
+            field: `category_id`,
+            status: 400,
+          },
+        });
+      }
+
+      const { category_id } = req.params;  // eslint-disable-line
+      const category = await Category.findByPk(category_id);
+
+      if (category) {
+        return res.status(200).json(category);
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `CAT_01`,
+          message: `Categort with id ${category_id} does not exist`,  // eslint-disable-line
+          field: `category_id`,
+          status: 400,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 
   /**
@@ -236,9 +544,44 @@ class ProductController {
    * @param {*} next
    */
   static async getDepartmentCategories(req, res, next) {
-    const { department_id } = req.params;  // eslint-disable-line
-    // implement code to get categories in a department here
-    return res.status(200).json({ message: 'this works' });
+    try {
+      const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+
+      if (!errors.isEmpty()) {
+        return res.status(422).json({
+          error: {
+            code: `DEP_03`,
+            message: `Check that department_id isnumeric`,  // eslint-disable-line
+            field: `department_id`,
+            status: 400,
+          },
+        });
+      }
+
+      const { department_id } = req.params; // eslint-disable-line
+
+      const departments = await Department.findAndCountAll({
+        include: [Category],
+        through: { where: { department_id: `${department_id}` } },
+      });
+
+      if (departments) {
+        return res.status(200).json({
+          rows: { departments },
+        });
+      }
+
+      return res.status(404).json({
+        error: {
+          code: `DEP_03`,
+          message: `Error occurred`,  // eslint-disable-line
+          field: `departments`,
+          status: 400,
+        },
+      });
+    } catch (error) {
+      return next(error);
+    }
   }
 }
 

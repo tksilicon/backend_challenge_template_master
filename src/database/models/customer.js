@@ -60,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     customer.password = await customer.generatePasswordHash();
   });
 
+  
   Customer.prototype.generatePasswordHash = async function generatePasswordHash() {
     const saltRounds = 8;
     return bcrypt.hash(this.password, saltRounds);
