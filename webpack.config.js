@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const nodeExternals = require('webpack-node-externals');
 
 /*
  * SplitChunksPlugin is enabled by default and replaced
@@ -79,4 +80,5 @@ module.exports = {
     open: true,
   },
   target: 'node',
+  externals: [nodeExternals()],
 };
