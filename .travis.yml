@@ -5,7 +5,7 @@ services:
   - mysql  
 
 script:
-  - "npm run test"
+  - "npm run dev"
   
 
 deploy:
