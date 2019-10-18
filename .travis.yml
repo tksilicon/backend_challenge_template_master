@@ -4,9 +4,6 @@ node_js:
 services:
   - mysql  
 
-script:
-  - "npm run dev"
-  
 
 deploy:
   provider: heroku
