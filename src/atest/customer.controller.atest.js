@@ -1,3 +1,5 @@
+
+
 // we will use supertest to test HTTP requests/responses
 import '@babel/polyfill';
 
@@ -137,10 +139,6 @@ describe('PUT /customer/address', () => {
         shipping_region_id: 1,
       });
 
-      
-
-    // console.log(response.body);
-
     // eslint-disable-next-line prefer-destructuring
 
     expect(response.body).toHaveProperty('customer');
@@ -157,12 +155,7 @@ describe('PUT /customer/creditCard', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .query({
         credit_card: '4111 1111 1111 1111',
-        
       });
-
-      
-
-   console.log(response.body);
 
     // eslint-disable-next-line prefer-destructuring
 
@@ -175,8 +168,8 @@ describe('PUT /customer/creditCard', () => {
 
 
 
-//  const { TESTACCESSTOKEN } = require('../config/jwtConfig');
-// https://github.com/sahat/satellizer/blob/master/examples/server/node/server.js
+// const { TESTACCESSTOKEN } = require('../config/jwtConfig');
+ 
 /*
 describe('POST /customers/facebook', () => {
   jest.setTimeout(30000);
@@ -223,3 +216,5 @@ describe('my test', () => {
       // code
    });
 }) */
+
+//   https://github.com/sahat/satellizer/blob/master/examples/server/node/server.js

@@ -7,6 +7,16 @@ const passport = require('passport');
 
 const router = Router();
 
+/**
+ * This function comment is parsed by doctrine
+ * @route POST //customers
+ * @group Customer - Operations about customer
+ * @param {string} email.query.required - email - eg: user@domain.com
+ * @param {string} password.query.required - password - eg: shhstehjep
+ * @param {string} name.query.required - email - eg: thankgod ukachukwu
+ * @returns {object} 200 - Return a Object of Customer with auth credencials
+ * @returns {Error}  400 - Return a error object { "code": "USR_02", "message": "The field example is empty.","field": "example","status": "500"}
+ */
 router.post(
   '/customers',
   check('email').isEmail(),

@@ -3,7 +3,6 @@ const FacebookTokenStrategy = require('passport-facebook-token');
 const LocalStrategy = require('passport-local').Strategy;
 const JwtStrategy = require('passport-jwt').Strategy;
 
-
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 
 const UserModel = require('../database/models/').Customer;
@@ -11,7 +10,7 @@ const secret = require('./jwtConfig');
 const { FACEBOOK_APP_ID } = require('./jwtConfig');
 const { FACEBOOK_APP_SECRET } = require('./jwtConfig');
 
-// Create a passport middleware to handle user registration
+// A passport middleware to handle user registration
 passport.use(
   'create',
   // eslint-disable-next-line no-undef
@@ -34,7 +33,7 @@ passport.use(
   )
 );
 
-// Create a passport middleware to handle User login
+// A passport middleware to handle User login
 passport.use(
   'login',
   // eslint-disable-next-line no-undef
@@ -56,7 +55,7 @@ passport.use(
           // If the user isn't found in the database, return a message
           return done(null, false, { message: 'User not found' });
         }
-       
+
         // If the passwords match, it returns a value of true.
         const validate = await user.validatePassword(password);
         if (!validate) {
@@ -103,6 +102,7 @@ passport.use(
   )
 );
 
+// A passport middleware to handle facebook  User login
 passport.use(
   new FacebookTokenStrategy(
     {

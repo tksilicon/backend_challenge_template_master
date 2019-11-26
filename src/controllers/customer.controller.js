@@ -125,8 +125,10 @@ class CustomerController {
     passport.authenticate(
       'login',
       { session: false },
+
+      // eslint-disable-next-line consistent-return
       // eslint-disable-next-line no-unused-vars
-      async (err, user, info) => {
+      async (err, user, _info) => {
         try {
           if (err || !user) {
             return res.status(401).json({
@@ -582,8 +584,7 @@ class CustomerController {
    * @memberof CustomerController
    */
   static async updateCreditCard(req, res, next) {
-    // write code to update customer credit card number
-    // return res.status(200).json({ message: 'this works' });
+   
 
     // eslint-disable-next-line camelcase
     const { credit_card } = req.query;
