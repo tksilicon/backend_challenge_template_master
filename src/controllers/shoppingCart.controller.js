@@ -225,8 +225,6 @@ class ShoppingCartController {
     // return res.status(200).json({ message: 'this works' });
 
     try {
-      
-
       const cartItem2 = await ShoppingCart.findOne({
         where: {
           // eslint-disable-next-line object-shorthand
@@ -243,10 +241,9 @@ class ShoppingCartController {
             status: 400,
           },
         });
-      } else {
-        cartItem2.quantity = quantity;
-        cartItem2.save();
       }
+      cartItem2.quantity = quantity;
+      cartItem2.save();
 
       const cartItem = await ShoppingCart.findOne({
         where: {
@@ -255,22 +252,20 @@ class ShoppingCartController {
         },
       });
 
-      if (cartItem) {
-        return res.status(200).json({
-          cartItem,
-        });
-      } else {
-
+      if (!cartItem) {
         return res.status(400).json({
-
           error: {
             code: `SHO_03`,
-            message: `Error occurred`,  // eslint-disable-line
+          message: `Error occurred`,  // eslint-disable-line
             field: `updatecateitem`,
             status: 400,
           },
         });
       }
+
+      return res.status(200).json({
+        cartItem,
+      });
     } catch (error) {
       return next(error);
     }
