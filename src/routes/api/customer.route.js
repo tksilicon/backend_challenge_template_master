@@ -26,6 +26,7 @@ router.post(
 
 router.post(
   '/customers/login',
+  passport.authenticate('login'),
   [
     // Check validity
     check('email', 'Invalid email').isEmail(),

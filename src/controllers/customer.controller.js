@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable consistent-return */
 /**
  * Customer controller handles all requests that has to do with customer
  * - create - allow customers to create a new account
@@ -208,7 +210,7 @@ class CustomerController {
       'facebook-token',
       { session: false },
       // eslint-disable-next-line no-unused-vars
-      async (err, user, info) => {
+      async (err, user, _info) => {
         try {
           if (err || !user) {
             return res.status(401).json({
@@ -285,7 +287,7 @@ class CustomerController {
   static async getCustomerProfile(req, res, next) {
     // eslint-disable-next-line consistent-return
     // eslint-disable-next-line no-unused-vars
-    passport.authenticate('jwt', { session: false }, async (err, user, info) => {
+    passport.authenticate('jwt', { session: false }, async (err, user, _info) => {
       try {
         if (!user) {
           return res.status(402).json({
@@ -384,7 +386,7 @@ class CustomerController {
 
     // eslint-disable-next-line no-unused-vars
     // eslint-disable-next-line consistent-return
-    passport.authenticate('jwt', async (err, user, info) => {
+    passport.authenticate('jwt', async (err, user, _info) => {
       try {
         if (err || !user) {
           return res.status(400).json({
@@ -495,7 +497,7 @@ class CustomerController {
 
     // eslint-disable-next-line no-unused-vars
     // eslint-disable-next-line consistent-return
-    passport.authenticate('jwt', async (err, user, info) => {
+    passport.authenticate('jwt', async (err, user, _info) => {
       try {
         if (err || !user) {
           return res.status(400).json({
@@ -584,14 +586,12 @@ class CustomerController {
    * @memberof CustomerController
    */
   static async updateCreditCard(req, res, next) {
-   
-
     // eslint-disable-next-line camelcase
     const { credit_card } = req.query;
 
     // eslint-disable-next-line no-unused-vars
     // eslint-disable-next-line consistent-return
-    passport.authenticate('jwt', async (err, user, info) => {
+    passport.authenticate('jwt', async (err, user, _info) => {
       try {
         if (err || !user) {
           return res.status(400).json({

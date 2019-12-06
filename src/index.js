@@ -17,6 +17,7 @@ const app = express();
 
 const passport = require('passport');
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 const expressSwagger = require('express-swagger-generator')(app);
 
 const options = {
@@ -39,8 +40,8 @@ const options = {
       },
     },
   },
-  basedir: __dirname, //app absolute path
-  files: ['./routes/**/*.js'], //Path to the API handle folder
+  basedir: __dirname, // app absolute path
+  files: ['./routes/**/*.js'], // Path to the API handle folder
 };
 expressSwagger(options);
 
